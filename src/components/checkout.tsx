@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 
 interface CheckoutProps {
   amount: number | null;
@@ -8,51 +9,67 @@ interface CheckoutProps {
 
 const baseUrl = "https://alvative-backend.onrender.com";
 
-// Initialize a new transaction
-const initializeTx = async (email: string, amount: number) => {
-  try {
-    const response: any = await axios.post(`${baseUrl}/initialize`, {
-      email,
-      amountToCharge: amount,
-    });
-
-    const authorizationUrl = response.data.data.data.authorization_url;
-    console.log("Redirecting to Paystack:", authorizationUrl);
-
-    // Redirect to Paystack payment page
-    window.location.href = authorizationUrl;
-  } catch (error: any) {
-    console.error("Initialization error:", error.response?.data || error.message);
-    alert("Failed to initialize transaction. Check console for details.");
-  }
-};
-
-// Attempt to charge using saved authorization
-const chargeAuth = async (email: string, amount: number) => {
-  if (!amount || amount <= 0) {
-    alert("Invalid amount");
-    return;
-  }
-
-  try {
-    const response = await axios.post(
-      `${baseUrl}/chargeAuthorization?email=${email}`,
-      { amount },
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    if (response.status === 200) {
-      alert("Charge successful!");
-      console.log("Charge response:", response.data);
-    }
-  } catch (error: any) {
-    console.warn("Charge failed, initializing transaction instead...", error.response?.data || error.message);
-    // If charging fails (no auth_code), initialize a new transaction
-    await initializeTx(email, amount);
-  }
-};
-
 function Checkout({ amount, email, onCancel }: CheckoutProps) {
+  const [buttonMessage, setButtonMessage] = useState("Pay");
+
+  // Initialize a new transaction
+  const initializeTx = async (email: string, amount: number) => {
+    try {
+      setButtonMessage("Redirecting...");
+      const response: any = await axios.post(`${baseUrl}/initialize`, {
+        email,
+        amountToCharge: amount,
+      });
+
+      const authorizationUrl = response.data.data?.data?.authorization_url;
+
+      if (!authorizationUrl) {
+        console.error("Authorization URL missing:", response.data);
+        alert("Payment initialization failed. Check console for details.");
+        return;
+      }
+
+      console.log("Redirecting to Paystack:", authorizationUrl);
+      window.location.href = authorizationUrl;
+    } catch (error: any) {
+      console.error("Initialization error:", error.response?.data || error.message);
+      alert("Failed to initialize transaction. Check console for details.");
+    } finally {
+      setButtonMessage("Pay");
+    }
+  };
+
+  // Attempt to charge using saved authorization
+  const chargeAuth = async (email: string, amount: number) => {
+    if (!amount || amount <= 0) {
+      alert("Invalid amount");
+      return;
+    }
+
+    try {
+      setButtonMessage("Charging...")
+      const response = await axios.post(
+        `${baseUrl}/chargeAuthorization?email=${email}`,
+        { amount },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.status === 200) {
+        alert("Charge successful!");
+        console.log("Charge response:", response.data);
+      }
+    } catch (error: any) {
+      console.warn(
+        "Charge failed, initializing transaction instead...",
+        error.response?.data || error.message
+      );
+      // If charging fails (no auth_code), initialize a new transaction
+      await initializeTx(email, amount);
+    }finally{
+      setButtonMessage("Pay")
+    }
+  };
+
   const handleCheckout = () => {
     if (!email) {
       alert("User not logged in");
@@ -94,7 +111,7 @@ function Checkout({ amount, email, onCancel }: CheckoutProps) {
         </div>
 
         <button className="checkout-button" onClick={handleCheckout}>
-          Pay
+          {buttonMessage}
         </button>
 
         <button className="cancel-button" onClick={onCancel}>

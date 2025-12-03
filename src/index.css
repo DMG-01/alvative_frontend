@@ -390,6 +390,17 @@
   border : none;
   border-radius :5px;
 }
+.getStartedButton button:hover{
+  background-color: #0056b3;
+  color : white;
+}
+
+.getStartedButton button:focus{
+  background-color: #0056b3;
+  color : white;
+}
+
+
 
 .features {
   color : grey
@@ -428,4 +439,15 @@
   .allCards {
     flex-direction: row;
   }
+
+  .getStartedButton button:hover{
+  background-color: #0056b3;
+  color : white;
+}
+
+.getStartedButton button:focus{
+  background-color: #0056b3;
+  color : white;
+}
+
 }

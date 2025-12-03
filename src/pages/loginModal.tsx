@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./loginModal.css";
 
@@ -13,6 +13,10 @@ const baseUrl = "https://alvative-backend.onrender.com";
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [buttonMessage, setButtonMessage] = useState("Continue")
+
+
+  
 
   if (!isOpen) return null;
 
@@ -28,6 +32,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
 
     try {
       // STEP 1: Check if user exists
+      setButtonMessage("logging in...")
       const response = await axios.get(`${baseUrl}/users/${email}`);
       
       if (response.status === 200) {
@@ -50,6 +55,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
       } else {
         setError("Server error, try again.");
       }
+    }finally{
+
     }
   };
 
@@ -68,7 +75,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
           />
           {error && <span className="error">{error}</span>}
 
-          <button type="submit" className="login-btn">Continue</button>
+          <button type="submit" className="login-btn">{buttonMessage}</button>
           <button type="button" className="cancel-btn" onClick={onClose}>
             Cancel
           </button>
