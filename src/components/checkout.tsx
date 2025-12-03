@@ -6,7 +6,7 @@ interface CheckoutProps {
   onCancel: () => void;
 }
 
-const baseUrl = "http://localhost:4000";
+const baseUrl = "https://alvative-backend.onrender.com";
 
 // Initialize a new transaction
 const initializeTx = async (email: string, amount: number) => {
