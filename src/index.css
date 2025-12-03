@@ -1,0 +1,430 @@
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.login-modal {
+  background: white;
+  padding: 25px;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  text-align: center;
+  animation: popIn 0.25s ease-in-out;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.login-modal input {
+  width: 90%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 15px;
+}
+
+.login-btn {
+  width: 95%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cancel-btn {
+  width: 95%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #e53935; /* red */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.error {
+  display: block;
+  margin-top: 8px;
+  color: red;
+  font-size: 14px;
+}
+
+
+
+
+
+
+/* Container for centering the login form */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Takes up the full viewport height */
+  background-color: #f4f7f6; /* Light background */
+  font-family: Arial, sans-serif;
+}
+
+/* The actual form card */
+.login-form {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px; /* Limit the width of the form */
+}
+
+.login-title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Focus state for input */
+.input-group input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+/* Error state for input */
+.input-group .input-error {
+  border-color: #dc3545; /* Red border for error */
+}
+
+/* Error message text */
+.error-message {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+/* Login button styling */
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+.login-button:disabled {
+  background-color: #a0c4ff;
+  cursor: not-allowed;
+}
+
+/* --- MODAL CENTERING AND OVERLAY FIXES --- */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 1. KEEP: Ensures center-screen alignment */
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* 2. FIX: Changed background to fully transparent 
+     to avoid showing a second dark layer over the blur. 
+     The blur is applied to the content, not the overlay. 
+     You can uncomment the line below if you want the dark background back.
+  */
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  background-color: transparent; /* Changed to transparent */
+}
+
+/* Fix the Checkout container margin when inside the modal overlay */
+.checkout-container {
+  width: 400px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  /* FIX: Remove fixed margin to let .modal-overlay center it */
+  margin: 0; 
+  z-index: 1001; /* Ensure the modal content is above the overlay/blur */
+}
+
+/* --- NEW BLUR EFFECT CSS --- */
+
+/* Wrapper for the main page content (everything except the modal) */
+.content-wrapper {
+  /* This ensures the wrapper can transition smoothly */
+  transition: filter 0.3s ease-out; 
+}
+
+/* This class is applied when the modal is open */
+.content-wrapper.blurred {
+  /* Apply the blur filter to the background content */
+  filter: blur(5px);
+  /* Prevent interaction with blurred content */
+  pointer-events: none; 
+}
+
+
+/* --- EXISTING CSS (Keep these, but make sure the .checkout-container margin is removed above) --- */
+
+/*
+.cancel-button { ... }
+.checkoutHead h3 { ... }
+... (all other styles) ...
+*/
+
+.cancel-button {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  background-color: #e74c3c; /* red */
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px; /* spacing from the Pay button */
+}
+
+.cancel-button:hover {
+  background-color: #c0392b; /* darker red on hover */
+}
+
+.checkout-container {
+  width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+}
+
+.checkoutHead h3 {
+  margin: 0 0 20px 0;
+  text-align: center;
+  color: #333;
+}
+
+.paymentMethod h2 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #555;
+}
+
+.paymentList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paymentList:hover {
+  background-color: #f9f9f9;
+}
+
+.paymentList .left p:first-child {
+  font-weight: bold;
+  margin: 0;
+  color: #0070f3;
+}
+
+.paymentList .left p:last-child {
+  margin: 0;
+  color: #555;
+}
+
+.paymentList .right input[type="radio"] {
+  width: 18px;
+  height: 18px;
+}
+
+.checkAmount {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.checkout-button {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  background-color: #0070f3;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkout-button:hover {
+  background-color: #005bb5;
+}
+
+.heading h1 {
+  text-align: center
+}
+
+.billingNavigation {
+  display : flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.billingNavigation button {
+  border : none;
+  margin-right : 10px;
+  background-color: transparent;
+}
+.billingNavigation button:focus {
+  border : 1px solid black;
+  padding : 5%;
+  width : 130px;
+  border :1px solid grey;
+  font-weight : 600;
+  border-radius :5px;
+  font-size :14px;
+}
+
+.allCards {
+  display : flex;
+}
+
+.eachCard {
+  border: 1px solid grey;
+  border-radius : 10px;
+  width : 350px;
+  padding :1%;
+}
+
+.eachCard .pricePlan{
+  display : flex;
+  align-items:baseline;
+}
+
+.eachCard .pricePlan h2 {
+  font-size : 40px;
+  margin-top:1px;
+  margin-right:5px;
+}
+
+.eachCard .pricePlan p {
+  color : grey
+}
+
+.getStartedButton {
+  display : flex;
+  flex-direction : row;
+  align-items: center;
+  justify-content: center;
+}
+
+.getStartedButton button {
+  width : 97%;
+  height : 40px;
+  background-color: lightgrey;
+  border : none;
+  border-radius :5px;
+}
+
+.features {
+  color : grey
+  
+}
+
+.features h3{
+  color : black
+}
+
+
+.featureList p i{
+  font-size: 25px;
+  margin-right : 3px;
+  color : black
+}
+
+.featureList div {
+  display : flex;
+  flex-direction: row;
+  align-items: center;
+
+}
+
+.allCards {
+  width: 90%;
+  padding : 3%;
+  display : flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+@media (min-width: 1280px) {
+
+  .allCards {
+    flex-direction: row;
+  }
+}
