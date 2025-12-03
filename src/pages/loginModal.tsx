@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./loginModal.css";
 
 interface LoginModalProps {
@@ -7,6 +8,7 @@ interface LoginModalProps {
   onLoginSuccess: (email: string) => void;
 }
 
+const baseUrl = "https://alvative-backend.onrender.com";
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -14,9 +16,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
 
   if (!isOpen) return null;
 
-  const validateEmail = (email: string) => {
-    return /\S+@\S+\.\S+/.test(email);
-  };
+  const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,24 +27,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     }
 
     try {
-      // STEP 1: Try to get user (existing)
+      // STEP 1: Check if user exists
+      const response = await axios.get(`${baseUrl}/users/${email}`);
       
-      // If successful
-      onLoginSuccess(email);
-      setError("");
-      return;
+      if (response.status === 200) {
+        // User exists
+        onLoginSuccess(email);
+        setError("");
+      }
     } catch (err: any) {
-      // STEP 2: If 404, create new user
+      // STEP 2: If 404, create the user
       if (err.response && err.response.status === 404) {
         try {
-          onLoginSuccess(email);
-          setError("");
-          return;
-        } catch (createErr) {
-          setError("Failed to create user");
+          const createResponse = await axios.post(`${baseUrl}/users`, { email });
+          if (createResponse.status === 200 || createResponse.status === 201) {
+            onLoginSuccess(email);
+            setError("");
+          }
+        } catch (createErr: any) {
+          setError("Failed to create user. Try again.");
         }
       } else {
-        setError("Server error, try again");
+        setError("Server error, try again.");
       }
     }
   };
@@ -62,11 +66,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
           {error && <span className="error">{error}</span>}
 
           <button type="submit" className="login-btn">Continue</button>
-
           <button type="button" className="cancel-btn" onClick={onClose}>
             Cancel
           </button>
